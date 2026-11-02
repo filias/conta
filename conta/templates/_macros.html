@@ -1,0 +1,37 @@
+{% macro tag(category) -%}
+  <span class="tag tag-{{ category }}">{{ category|upper }}</span>
+{%- endmacro %}
+
+{% macro deadline_row(item, today, done=None, records=None) -%}
+  {% set ob = item.obligation %}
+  {% set is_done = done is not none and item.uid in done %}
+  <li class="deadline{% if is_done %} done{% elif item.due < today %} overdue{% elif (item.due - today).days <= 7 %} soon{% endif %}">
+    <div class="date">
+      <span class="day">{{ item.due.day }}</span>
+      <span class="month">{{ item.due.strftime('%b') }}</span>
+    </div>
+    <div class="what">
+      <div class="title">{{ tag(ob.category) }} <a href="{{ ob.link }}" rel="noopener">{{ ob.title }}</a>
+        <span class="period">{{ item.period }}</span></div>
+      <div class="summary">{{ ob.summary }}</div>
+      {% if ob.condition and done is none %}<div class="condition">Only {{ ob.condition }}.</div>{% endif %}
+      {% if item.due != item.nominal %}<div class="condition">Moved from {{ item.nominal.strftime('%a %d %b') }} (weekend/holiday).</div>{% endif %}
+    </div>
+    <div class="when">{{ item.due|days_label }}</div>
+    {% if done is not none %}
+      <form method="post" action="{{ url_for('private.toggle') }}" class="toggle">
+        <input type="hidden" name="key" value="{{ item.key }}">
+        <input type="hidden" name="period" value="{{ item.period }}">
+        {% if ob.amount_label %}
+          {% if is_done %}
+            {% set amount = records[item.uid].amount if records else none %}
+            {% if amount is not none %}<span class="amount">{{ ob.amount_label }} {{ amount|euros }}</span>{% endif %}
+          {% else %}
+            <input name="amount" class="amount" inputmode="decimal" placeholder="{{ ob.amount_label }} €" aria-label="{{ ob.amount_label }} (€)">
+          {% endif %}
+        {% endif %}
+        <button class="check" title="{{ 'Mark as not done' if is_done else 'Mark as done' }}">{{ '✓' if is_done else '' }}</button>
+      </form>
+    {% endif %}
+  </li>
+{%- endmacro %}

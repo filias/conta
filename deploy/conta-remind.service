@@ -1,0 +1,9 @@
+[Unit]
+Description=conta daily deadline reminders
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/conta
+EnvironmentFile=/opt/conta/.env
+ExecStart=/opt/conta/.venv/bin/flask --app conta remind

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Guides{% endblock %}
+{% block content %}
+<h1>Guides</h1>
+<p class="lead">Step-by-step walkthroughs of the portals, most with a short screen recording.</p>
+<ul class="cards">
+  {% for g in guides %}
+    <li><a href="{{ url_for('public.guide', slug=g.slug) }}">
+      <strong>{{ g.title }}</strong>{% if g.youtube or g.video %} <span class="badge">video</span>{% endif %}
+      <span>{{ g.summary }}</span></a></li>
+  {% else %}
+    <li class="empty">No guides yet.</li>
+  {% endfor %}
+</ul>
+
+{% if private_guides %}
+  <h2>Private notes <span class="badge">only you</span></h2>
+  <ul class="cards">
+    {% for g in private_guides %}
+      <li><a href="{{ url_for('private.private_guide', slug=g.slug) }}">
+        <strong>{{ g.title }}</strong><span>{{ g.summary }}</span></a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

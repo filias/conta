@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_macros.html" import deadline_row %}
+{% block title %}My deadlines{% endblock %}
+{% block content %}
+<h1>My deadlines</h1>
+
+{% if overdue %}
+  <h2 class="danger">Overdue</h2>
+  <ul class="deadlines">
+    {% for item in overdue %}{{ deadline_row(item, today, done, records) }}{% endfor %}
+  </ul>
+{% endif %}
+
+<h2>Next 4 months</h2>
+<ul class="deadlines">
+  {% for item in upcoming %}{{ deadline_row(item, today, done, records) }}{% else %}<li class="empty">Nothing coming up.</li>{% endfor %}
+</ul>
+
+{% if recent_done %}
+  <h2 class="muted">Recently done</h2>
+  <ul class="deadlines">
+    {% for item in recent_done|reverse %}{{ deadline_row(item, today, done, records) }}{% endfor %}
+  </ul>
+{% endif %}
+
+{% if totals %}
+<section class="card">
+  <h2>{{ today.year }} so far</h2>
+  <table class="totals">
+    {% for ob, total in totals.items() %}
+      <tr><th>{{ ob.title }}</th><td>{{ ob.amount_label }}</td><td class="num">{{ total|euros }}</td></tr>
+    {% endfor %}
+  </table>
+  <p class="muted">From the amounts you entered when ticking things off.</p>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Alerts</h2>
+  {% if feed_url %}
+    <p>Subscribe to your private calendar feed — it only includes what applies to you,
+      ticks off what you've done, and has alarms {{ settings.lead_days|join(', ') }} days before:</p>
+    <p><code class="copy">{{ feed_url }}</code></p>
+    <p class="muted">Apple Calendar: File → New Calendar Subscription. Google Calendar: Other calendars → From URL
+      (Google ignores the feed's alarms, so rely on email/ntfy there). Keep this link secret.</p>
+  {% else %}
+    <p class="muted">Set <code>CALENDAR_TOKEN</code> to get a private calendar feed.</p>
+  {% endif %}
+  <p class="muted">Email / push reminders go out daily from <code>flask --app conta remind</code>
+    — configure them in <code>.env</code>.</p>
+</section>
+{% endblock %}

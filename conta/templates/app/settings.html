@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<form method="post" class="card narrow">
+  <h1>Settings</h1>
+  <p class="muted">These decide which obligations show up in your deadlines, reminders and private feed.</p>
+
+  <label class="check-row"><input type="checkbox" name="social_security" {% if settings.social_security %}checked{% endif %}>
+    I pay Segurança Social contributions</label>
+  <p class="hint">New freelancers are exempt for the first 12 months after starting activity.</p>
+
+  <fieldset>
+    <legend>IVA (VAT)</legend>
+    <label class="check-row"><input type="radio" name="vat" value="exempt" {% if settings.vat == 'exempt' %}checked{% endif %}>
+      Exempt (art. 53.º CIVA)</label>
+    <label class="check-row"><input type="radio" name="vat" value="quarterly" {% if settings.vat == 'quarterly' %}checked{% endif %}>
+      Quarterly regime</label>
+  </fieldset>
+
+  <label class="check-row"><input type="checkbox" name="eu_clients" {% if settings.eu_clients %}checked{% endif %}>
+    I invoice business clients in other EU countries (declaração recapitulativa)</label>
+
+  <label class="check-row"><input type="checkbox" name="monthly_invoice" {% if settings.monthly_invoice %}checked{% endif %}>
+    Remind me to issue an invoice at the end of every month</label>
+
+  <label class="check-row"><input type="checkbox" name="payments_on_account" {% if settings.payments_on_account %}checked{% endif %}>
+    I have IRS payments on account (pagamentos por conta) this year</label>
+
+  <label>Remind me this many days before (comma-separated)
+    <input name="reminder_days" value="{{ settings.reminder_days }}" pattern="[0-9, ]+"></label>
+
+  <label>Track deadlines from
+    <input type="date" name="tracking_since" value="{{ settings.tracking_since.isoformat() }}"></label>
+  <p class="hint">Earlier deadlines won't show as overdue.</p>
+
+  <button class="button">Save</button>
+</form>
+{% endblock %}

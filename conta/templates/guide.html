@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ guide.title }}{% endblock %}
+{% block content %}
+<article class="guide">
+  <p class="muted"><a href="{{ url_for('public.guides') }}">← Guides</a>
+    {% if not guide.public %}<span class="badge">private</span>{% endif %}</p>
+  <h1>{{ guide.title }}</h1>
+  {% if guide.summary %}<p class="lead">{{ guide.summary }}</p>{% endif %}
+
+  {% if guide.youtube %}
+    <div class="video">
+      <iframe src="https://www.youtube-nocookie.com/embed/{{ guide.youtube }}" title="{{ guide.title }}"
+        allow="encrypted-media; picture-in-picture; fullscreen" loading="lazy"></iframe>
+    </div>
+  {% elif guide.video %}
+    <video class="video" controls preload="metadata"
+      src="{{ url_for('static', filename='videos/' ~ guide.video) if guide.public else url_for('private.media', filename=guide.video) }}"></video>
+  {% endif %}
+
+  <div class="prose">{{ guide.body_html|safe }}</div>
+</article>
+{% endblock %}

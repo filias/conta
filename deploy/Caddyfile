@@ -1,0 +1,29 @@
+# Reference Caddy config for conta.filias.dev — add to /etc/caddy/Caddyfile and
+#   sudo caddy reload --config /etc/caddy/Caddyfile
+
+conta.filias.dev {
+    encode zstd gzip
+
+    # GitHub push webhook → deploy/webhook.py
+    handle /deploy {
+        reverse_proxy 127.0.0.1:9007
+    }
+
+    # Public assets straight from disk
+    handle /static/* {
+        root * /opt/conta/conta
+        header Cache-Control "public, max-age=604800"
+        file_server
+    }
+
+    handle {
+        reverse_proxy 127.0.0.1:8007
+    }
+
+    header {
+        Strict-Transport-Security "max-age=31536000"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Frame-Options "DENY"
+    }
+}

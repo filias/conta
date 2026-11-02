@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_macros.html" import deadline_row %}
+{% block title %}{{ year }} calendar{% endblock %}
+{% block content %}
+<h1>Deadlines for {{ year }}</h1>
+<p class="lead">Every recurring obligation for a freelancer (Categoria B, regime simplificado).
+  Some only apply to you in certain situations — those are marked.</p>
+<p class="pager">
+  <a href="{{ url_for('public.calendar', year=year - 1) }}">← {{ year - 1 }}</a>
+  <a href="{{ url_for('public.public_ics') }}">Add to your calendar (.ics)</a>
+  <a href="{{ url_for('public.calendar', year=year + 1) }}">{{ year + 1 }} →</a>
+</p>
+
+{% for month, group in items|groupby('due.month') %}
+  <h2 class="month-heading">{{ group[0].due.strftime('%B') }}</h2>
+  <ul class="deadlines">
+    {% for item in group %}{{ deadline_row(item, today) }}{% endfor %}
+  </ul>
+{% endfor %}
+{% endblock %}
