@@ -105,6 +105,7 @@ code.copy { display: block; overflow-wrap: anywhere; padding: .5rem; user-select
 .title a:hover { color: var(--accent); }
 .period { color: var(--muted); font-size: .88rem; white-space: nowrap; }
 .summary { color: var(--muted); font-size: .93rem; }
+a.howto { white-space: nowrap; font-weight: 600; text-decoration: none; }
 .condition { font-size: .85rem; font-style: italic; color: var(--muted); margin-top: .2rem; }
 .when { font-size: .85rem; color: var(--muted); white-space: nowrap; }
 .overdue .when { color: var(--danger); font-weight: 600; }

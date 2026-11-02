@@ -68,3 +68,19 @@ def test_rolled_deadline_is_kept_in_window():
     decl = [o for o in items if o.key == "ss-declaration"]
     assert decl[0].nominal == date(2026, 1, 31)
     assert decl[0].due == date(2026, 2, 2)
+
+
+def test_recapitulativa_is_due_a_month_before_the_vat_return():
+    items = occurrences(
+        date(2026, 1, 1), date(2027, 1, 31), profile(vat="quarterly", eu_clients=True)
+    )
+    recap = {o.period: o.due for o in items if o.key == "vat-recapitulativa"}
+    vat = {o.period: o.due for o in items if o.key == "vat-return"}
+    assert recap == {
+        "Q4 2025": date(2026, 1, 20),
+        "Q1 2026": date(2026, 4, 20),
+        "Q2 2026": date(2026, 7, 20),
+        "Q3 2026": date(2026, 10, 20),
+        "Q4 2026": date(2027, 1, 20),
+    }
+    assert all(recap[q] < vat[q] for q in vat)

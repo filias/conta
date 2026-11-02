@@ -13,7 +13,8 @@
     <div class="what">
       <div class="title">{{ tag(ob.category) }} <a href="{{ ob.link }}" rel="noopener">{{ ob.title }}</a>
         <span class="period">{{ item.period }}</span></div>
-      <div class="summary">{{ ob.summary }}</div>
+      <div class="summary">{{ ob.summary }}
+        {% if ob.guide %}<a class="howto" href="{{ url_for('public.guide', slug=ob.guide) }}">How to →</a>{% endif %}</div>
       {% if ob.condition and done is none %}<div class="condition">Only {{ ob.condition }}.</div>{% endif %}
       {% if item.due != item.nominal %}<div class="condition">Moved from {{ item.nominal.strftime('%a %d %b') }} (weekend/holiday).</div>{% endif %}
     </div>

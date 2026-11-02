@@ -82,3 +82,13 @@ def test_toggle_and_settings(logged_in):
     s = models.get_settings()
     assert s.vat == "quarterly" and not s.social_security
     assert s.lead_days == [10, 2]
+
+
+def test_obligation_guides_exist_and_are_linked(client):
+    from conta.obligations import OBLIGATIONS
+
+    for ob in OBLIGATIONS:
+        if ob.guide:
+            assert client.get(f"/guides/{ob.guide}").status_code == 200, ob.guide
+    page = client.get("/calendar?year=2026").data
+    assert b'href="/guides/declaracao-recapitulativa"' in page

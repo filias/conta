@@ -48,6 +48,7 @@ class Obligation:
     personal: bool = False  # Only shown on the private side
     roll_back: bool = False  # Weekend/holiday moves it earlier, not later
     amount_label: str | None = None  # Ask for an amount when marking it done
+    guide: str | None = None  # Slug of the how-to in content/guides/
 
     def applies(self, profile: Profile | None) -> bool:
         if profile is None:
@@ -111,8 +112,9 @@ def _vat(day: int) -> Schedule:
 
 
 def _recapitulativa(y: int) -> list[tuple[str, date]]:
-    # Sources disagree on this one (20th of the month after the quarter vs. with
-    # the IVA return); we use the earliest so the reminder is never late.
+    # Quarterly filers: 20th of the month after the quarter (art. 30.º RITI) —
+    # a month *before* the IVA return. The €50k switch to monthly filing only
+    # counts goods, so a services-only freelancer always stays quarterly.
     return [
         (f"Q4 {y - 1}", date(y, 1, 20)),
         (f"Q1 {y}", date(y, 4, 20)),
@@ -157,6 +159,7 @@ OBLIGATIONS: list[Obligation] = [
         personal=True,
         roll_back=True,
         amount_label="Invoiced",
+        guide="fatura-recibo",
     ),
     Obligation(
         key="ss-declaration",
@@ -170,6 +173,7 @@ OBLIGATIONS: list[Obligation] = [
         schedule=_ss_declaration,
         applies_to=_pays_ss,
         condition="if you pay Segurança Social (not in your first 12 months)",
+        guide="seguranca-social-declaracao-trimestral",
     ),
     Obligation(
         key="ss-payment",
@@ -191,7 +195,8 @@ OBLIGATIONS: list[Obligation] = [
         category="iva",
         summary=(
             "Submit the quarterly VAT return on the Portal das Finanças, by the "
-            "20th of the second month after the quarter (Q2: September)."
+            "20th of the second month after the quarter (Q2: September). EU "
+            "services go in campo 7 and must match your declaração recapitulativa."
         ),
         link=FINANCAS,
         schedule=_vat(20),
@@ -215,14 +220,15 @@ OBLIGATIONS: list[Obligation] = [
         title="IVA declaração recapitulativa",
         category="iva",
         summary=(
-            "List the services you invoiced to business clients in other EU "
-            "countries (reverse charge). Check the exact date on the AT's "
-            "calendário fiscal; many people file it with the IVA return."
+            "List each EU business client's VAT number and what you invoiced them "
+            "last quarter. Due a month before the IVA return — not with it. Skip "
+            "it in quarters with no EU invoices."
         ),
         link=FINANCAS,
         schedule=_recapitulativa,
         applies_to=lambda p: p.eu_clients,
         condition="if you invoice business clients in other EU countries",
+        guide="declaracao-recapitulativa",
     ),
     Obligation(
         key="irs-household",
