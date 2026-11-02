@@ -58,3 +58,13 @@ def test_compose():
     subject, body = compose(hits, "https://conta.example")
     assert subject.startswith("conta: ")
     assert "https://conta.example/app" in body
+
+
+def test_remind_test_flag_without_channels(app, monkeypatch):
+    for var in ["SMTP_HOST", "MAIL_TO", "NTFY_URL"]:
+        monkeypatch.delenv(var, raising=False)
+    result = app.test_cli_runner().invoke(args=["remind", "--test", "--dry-run"])
+    assert "conta: test reminder" in result.output
+    result = app.test_cli_runner().invoke(args=["remind", "--test"])
+    assert result.exit_code != 0
+    assert "No channel configured" in result.output

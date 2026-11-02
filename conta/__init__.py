@@ -75,15 +75,25 @@ def create_app(config: dict | None = None) -> Flask:
 
     @app.cli.command("remind")
     @click.option("--dry-run", is_flag=True, help="Print instead of sending.")
-    def remind(dry_run):
+    @click.option("--test", is_flag=True, help="Send a test message to every channel.")
+    def remind(dry_run, test):
         """Send today's deadline reminders by email and/or ntfy."""
         from .reminders import compose, due_reminders, send_email, send_ntfy
 
         items = due_reminders(date.today(), models.get_settings(), models.done_uids())
-        if not items:
+        if test:
+            subject = "conta: test reminder"
+            body = "Reminders from conta reach you. 🎉"
+            if items:
+                body += (
+                    "\n\nToday's would be:\n\n"
+                    + compose(items, app.config["SITE_URL"])[1]
+                )
+        elif not items:
             click.echo("Nothing due.")
             return
-        subject, body = compose(items, app.config["SITE_URL"])
+        else:
+            subject, body = compose(items, app.config["SITE_URL"])
         if dry_run:
             click.echo(f"{subject}\n\n{body}")
             return
