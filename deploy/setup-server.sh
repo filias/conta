@@ -9,7 +9,7 @@ REPO=${REPO:-https://github.com/filias/conta.git}
 CADDYFILE=/etc/caddy/Caddyfile
 
 if [ ! -d "$APP" ]; then
-  for port in 8007 9007; do
+  for port in 8120 9120; do
     if ss -ltn "sport = :$port" | grep -q LISTEN; then
       echo "Port $port is already in use — pick another in deploy/ and retry." >&2
       exit 1
@@ -66,6 +66,6 @@ if ! grep -q "^conta.filias.dev" "$CADDYFILE"; then
 fi
 
 sleep 2
-curl -fsS -o /dev/null -w "app on :8007 → HTTP %{http_code}\n" http://127.0.0.1:8007/
+curl -fsS -o /dev/null -w "app on :8120 → HTTP %{http_code}\n" http://127.0.0.1:8120/
 echo
 echo "Done. Webhook secret is in /etc/conta-webhook.env."

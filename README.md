@@ -98,7 +98,7 @@ gh api repos/filias/conta/hooks -f name=web -f 'events[]=push' \
   -f "config[secret]=$(ssh memi 'cut -d= -f2 /etc/conta-webhook.env')"
 ```
 
-Ports: app `8007`, webhook `9007` (localhost only).
+Ports: app `8120`, webhook `9120` (localhost only).
 
 ## Development
 

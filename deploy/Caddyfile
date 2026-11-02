@@ -6,7 +6,7 @@ conta.filias.dev {
 
     # GitHub push webhook → deploy/webhook.py
     handle /deploy {
-        reverse_proxy 127.0.0.1:9007
+        reverse_proxy 127.0.0.1:9120
     }
 
     # Public assets straight from disk
@@ -17,7 +17,7 @@ conta.filias.dev {
     }
 
     handle {
-        reverse_proxy 127.0.0.1:8007
+        reverse_proxy 127.0.0.1:8120
     }
 
     header {

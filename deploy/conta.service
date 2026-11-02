@@ -7,7 +7,7 @@ User=root
 WorkingDirectory=/opt/conta
 EnvironmentFile=/opt/conta/.env
 # One worker: login throttling is kept in process memory.
-ExecStart=/opt/conta/.venv/bin/gunicorn --workers 1 --threads 4 --bind 127.0.0.1:8007 "conta:create_app()"
+ExecStart=/opt/conta/.venv/bin/gunicorn --workers 1 --threads 4 --bind 127.0.0.1:8120 "conta:create_app()"
 Restart=always
 RestartSec=3
 
