@@ -82,17 +82,21 @@ Same pattern as the other filias.dev apps: Caddy → gunicorn under systemd, and
 a webhook that runs `git pull && uv sync && systemctl restart conta` on push to
 `main`.
 
-One-time server setup:
+One-time server setup (DNS: `*.filias.dev` already points at the server):
 
-1. DNS: an `A` record for `conta` → the server IP (Namecheap).
-2. `git clone git@github.com:filias/conta.git /opt/conta && cd /opt/conta && uv sync`
-3. Create `/opt/conta/.env` from `.env.example` (`SESSION_COOKIE_SECURE=1`).
-4. `cp deploy/*.service deploy/*.timer /etc/systemd/system/`, put
-   `WEBHOOK_SECRET=…` in `/etc/conta-webhook.env`, then
-   `systemctl enable --now conta conta-webhook conta-remind.timer`.
-5. Add `deploy/Caddyfile`'s block to `/etc/caddy/Caddyfile`, `caddy reload`.
-6. GitHub → Settings → Webhooks: `https://conta.filias.dev/deploy`,
-   content type `application/json`, the same secret, push events.
+```bash
+scp deploy/setup-server.sh memi: && ssh -t memi bash setup-server.sh
+```
+
+It clones to `/opt/conta`, asks for the login password, generates `.env` and the
+webhook secret, installs the systemd units + reminder timer, and adds the Caddy
+block (validating it first). Then register the GitHub webhook:
+
+```bash
+gh api repos/filias/conta/hooks -f name=web -f 'events[]=push' \
+  -f 'config[url]=https://conta.filias.dev/deploy' -f 'config[content_type]=json' \
+  -f "config[secret]=$(ssh memi 'cut -d= -f2 /etc/conta-webhook.env')"
+```
 
 Ports: app `8007`, webhook `9007` (localhost only).
 
